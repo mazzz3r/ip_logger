@@ -3,7 +3,7 @@ from typing import Dict
 
 from flask import Blueprint, request, render_template, redirect
 
-from utilities import LoggerLog
+from app.logger.utilities import LoggerLog
 
 ips: Dict[str, LoggerLog] = dict()
 
