@@ -21,6 +21,7 @@ def logger(tg_user_id: int):
     else:
         ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
     print("first: ", ip)
+    print("header", request.environ.get("HTTP_X_FORWARDED_FOR"))
     if ips.get(ip) is None:
         ips[ip] = LoggerLog(ip_address=ip, receiver_tg_id=tg_user_id, user_agent=request.user_agent.string)
 
@@ -43,6 +44,8 @@ def add_log():
     else:
         ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
     print("second: ", ip)
+    print("header", request.environ.get("HTTP_X_FORWARDED_FOR"))
+
     if time.time() - ips[ip].last_response >= 3:
         return "fuck u", 403
 
