@@ -25,11 +25,16 @@ def webhook():
         abort(403)
 
 
-@bot.message_handler(commands=["help", "start"])
+@bot.message_handler(commands=["start"])
 def send_welcome(message):
-    bot.reply_to(message,
-                 ("Hi there, I am EchoBot.\n"
-                  "I am here to echo your kind words back to you."))
+    bot.send_message(message,
+                     ("Hi there, I am Big Brother and I am watching for you.\n"
+                      "Try to type /help to see all commands"))
+
+
+@bot.message_handler(commands=["start"])
+def send_welcome(message):
+    bot.reply_to(message, "For now there is only one command: /get_link which returns a link to your logger.")
 
 
 @bot.message_handler(commands=["get_link"])
@@ -41,7 +46,7 @@ def send_id(message):
 # Handle all other messages
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def echo_message(message):
-    bot.reply_to(message, message.text)
+    bot.send_message(message.chat.id, "Idk this command, just type /help")
 
 
 # Remove webhook, it fails sometimes the set if there is a previous webhook
