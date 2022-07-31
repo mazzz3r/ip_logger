@@ -39,8 +39,9 @@ class LoggerLog:
         self.ip_address = ip_address
         self.receiver_tg_id = receiver_tg_id
         self.data = self.get_main_info()
+        print(self.data)
 
-    def get_main_info(self):
+    def get_main_info(self) -> dict[str, str]:
         url = f"http://ip-api.com/json/{self.ip_address}?fields=16969727"
         response = requests.get(url)
         data = json.loads(response.text)
@@ -49,7 +50,7 @@ class LoggerLog:
         data["platform"] = parsed_ua.platform
         return data
 
-    def get_main_log(self):
+    def get_main_log(self) -> str:
         return f"""❗A new visitor on logger❗
 <b>Time:</b> {datetime.datetime.today().strftime("%Y-%m-%d-%H:%M:%S")}
 <b>IP:</b> {self.ip_address}
@@ -72,7 +73,7 @@ ____________________
             .replace("True", "Yes") \
             .replace("False", "No")
 
-    def get_second_log(self):
+    def get_second_log(self) -> str:
         return f""" Additional info about {self.ip_address}
 ____________________
 <b>Screen resolution:</b> {self.data["screen_width"]}x{self.data["screen_height"]}
@@ -86,7 +87,7 @@ ____________________
             .replace("True", "Yes") \
             .replace("False", "No")
 
-    def send_message(self, msg):
+    def send_message(self, msg) -> None:
         requests.get(
             f"https://api.telegram.org/bot{Config.API_TOKEN}/sendMessage",
             data={"text": msg, "chat_id": self.receiver_tg_id, "parse_mode": "HTML"}
