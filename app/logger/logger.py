@@ -47,6 +47,8 @@ def add_log():
     print("header", request.environ.get("HTTP_X_FORWARDED_FOR"))
 
     if time.time() - ips[ip].last_response >= 10:
+        print("IDK WHY BRO, WHY")
+        print(time.time(), ips[ip].last_response)
         return "fuck u", 403
 
     new_data = request.get_json()
