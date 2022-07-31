@@ -45,10 +45,7 @@ class LoggerLog:
         response = requests.get(url)
         data = json.loads(response.text)
         parsed_ua = ParsedUserAgent(self.user_agent)
-        data.update(
-            platform=parsed_ua.platform,
-            browser=f"{parsed_ua.browser} {parsed_ua.version}"
-        )
+        data["browser"] = f"{parsed_ua.browser} {parsed_ua.version}"
         return data
 
     def get_main_log(self):
