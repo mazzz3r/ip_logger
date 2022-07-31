@@ -44,9 +44,9 @@ def add_log():
         ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
 
     if time.time() - ips[ip].last_response >= 3:
-        return "fuck u"
+        return "fuck u", 403
 
     new_data = request.get_json()
     ips[ip].data.update(new_data)
     ips[ip].send_message(ips[ip].get_second_log())
-    return "ok"
+    return "ok", 201
