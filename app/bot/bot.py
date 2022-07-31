@@ -45,10 +45,11 @@ def echo_message(message):
 
 
 # Remove webhook, it fails sometimes the set if there is a previous webhook
+# Uncomment to create webhook
+"""
 def create_webhook():
     bot.remove_webhook()
-
     time.sleep(0.1)
-
     # Set webhook
     bot.set_webhook(url=Config.WEBHOOK_URL_BASE + "/bot" + Config.WEBHOOK_URL_PATH)
+"""
