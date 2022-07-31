@@ -27,14 +27,14 @@ def webhook():
 
 @bot.message_handler(commands=["start"])
 def send_welcome(message):
-    bot.send_message(message,
+    bot.send_message(message.from_user,
                      ("Hi there, I am Big Brother and I am watching for you.\n"
                       "Try to type /help to see all commands"))
 
 
 @bot.message_handler(commands=["start"])
 def send_welcome(message):
-    bot.reply_to(message, "For now there is only one command: /get_link which returns a link to your logger.")
+    bot.reply_to(message.from_user, "For now there is only one command: /get_link which returns a link to your logger.")
 
 
 @bot.message_handler(commands=["get_link"])
