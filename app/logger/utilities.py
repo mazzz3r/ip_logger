@@ -39,7 +39,6 @@ class LoggerLog:
         self.ip_address = ip_address
         self.receiver_tg_id = receiver_tg_id
         self.data = self.get_main_info()
-        print(self.data)
 
     def get_main_info(self) -> dict[str, str]:
         url = f"http://ip-api.com/json/{self.ip_address}?fields=16969727"
