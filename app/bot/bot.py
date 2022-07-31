@@ -2,6 +2,8 @@ import logging
 import time
 
 import telebot
+from telebot import types
+
 from flask import Blueprint, request, abort
 
 from app.config import Config
@@ -26,19 +28,19 @@ def webhook():
 
 
 @bot.message_handler(commands=["start"])
-def send_welcome(message):
-    bot.send_message(message.from_user,
+def send_welcome(message: types.Message):
+    bot.send_message(message.chat.id,
                      ("Hi there, I am Big Brother and I am watching for you.\n"
                       "Try to type /help to see all commands"))
 
 
 @bot.message_handler(commands=["start"])
-def send_welcome(message):
-    bot.reply_to(message.from_user, "For now there is only one command: /get_link which returns a link to your logger.")
+def send_welcome(message: types.Message):
+    bot.reply_to(message, "For now there is only one command: /get_link which returns a link to your logger.")
 
 
 @bot.message_handler(commands=["get_link"])
-def send_id(message):
+def send_id(message: types.Message):
     bot.reply_to(message,
                  Config.WEBHOOK_URL_BASE + "/logger" + f"/{message.from_user.id}")
 
