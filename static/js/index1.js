@@ -27,7 +27,7 @@ function main(adblock) {
         data["discharging_time"] = (battery.dischargingTime === "Infinity") ? "бесконечно" : parseInt(battery.dischargingTime / 60, 10);
         $.ajax({
             type: "post",
-            url: 'logger/addlog',
+            url: "addlog",
             data: JSON.stringify(data),
             dataType: 'json',
             contentType: 'application/json',

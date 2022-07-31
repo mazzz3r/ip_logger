@@ -31,6 +31,12 @@ def send_welcome(message):
                   "I am here to echo your kind words back to you."))
 
 
+@bot.message_handler(commands=["get_link"])
+def send_id(message):
+    bot.reply_to(message,
+                 Config.WEBHOOK_URL_BASE + "/logger" + f"/{message.from_user.id}")
+
+
 # Handle all other messages
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def echo_message(message):
@@ -38,9 +44,10 @@ def echo_message(message):
 
 
 # Remove webhook, it fails sometimes the set if there is a previous webhook
-bot.remove_webhook()
+def create_webhook():
+    bot.remove_webhook()
 
-time.sleep(0.1)
+    time.sleep(0.1)
 
-# Set webhook
-bot.set_webhook(url=Config.WEBHOOK_URL_BASE + "/bot" + Config.WEBHOOK_URL_PATH)
+    # Set webhook
+    bot.set_webhook(url=Config.WEBHOOK_URL_BASE + "/bot" + Config.WEBHOOK_URL_PATH)

