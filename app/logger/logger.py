@@ -38,7 +38,10 @@ def logger(tg_user_id: int):
 
 @bp.route("/addlog", methods=['POST'])
 def add_log():
-    ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    if request.environ.get("HTTP_X_FORWARDED_FOR"):
+        ip = request.environ["HTTP_X_FORWARDED_FOR"].split(",")[-1].strip()
+    else:
+        ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
 
     if time.time() - ips[ip].last_response >= 3:
         return "fuck u"
