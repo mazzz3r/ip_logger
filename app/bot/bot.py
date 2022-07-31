@@ -1,7 +1,8 @@
-from flask import Blueprint, request, abort
-import telebot
 import logging
 import time
+
+import telebot
+from flask import Blueprint, request, abort
 
 from app.config import Config
 

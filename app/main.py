@@ -1,7 +1,7 @@
 from flask import Flask
-from app.logger import bp as logger_blueprint
-from app.bot import bp as bot_blueprint, create_webhook
 
+from app.bot import bp as bot_blueprint, create_webhook
+from app.logger import bp as logger_blueprint
 
 app = Flask(
     __name__,
