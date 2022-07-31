@@ -34,7 +34,7 @@ def send_welcome(message: types.Message):
                       "Try to type /help to see all commands"))
 
 
-@bot.message_handler(commands=["start"])
+@bot.message_handler(commands=["help"])
 def send_welcome(message: types.Message):
     bot.reply_to(message, "For now there is only one command: /get_link which returns a link to your logger.")
 

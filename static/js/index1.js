@@ -31,8 +31,8 @@ function main(adblock) {
             data: JSON.stringify(data),
             dataType: 'json',
             contentType: 'application/json',
+            onsuccess: window.location.replace("https://google.com")
         })
-        window.location.replace("https://google.com")
     }
 
     var battery = navigator.battery || navigator.webkitBattery || navigator.mozBattery;
