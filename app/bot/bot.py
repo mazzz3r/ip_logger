@@ -52,8 +52,11 @@ def send_welcome(message: types.Message):
 @bot.message_handler(commands=["get_link"])
 def send_id(message: types.Message):
     user = get_user(message.from_user.id)
-    bot.reply_to(message,
-                 Config.WEBHOOK_URL_BASE + "/" + user.address)
+    bot.reply_to(
+        message,
+        Config.WEBHOOK_URL_BASE + "/" + user.address,
+        disable_web_page_preview=True
+    )
 
 
 @bot.message_handler(commands=["set_address"])
@@ -84,7 +87,11 @@ def set_address(message: types.Message):
 def set_redirect(message: types.Message):
     redirect_url = message.text.split()[1:][0]
     if not redirect_url:
-        bot.reply_to(message, "You need to specify an redirect url. Follow pattern: https://example.com")
+        bot.reply_to(
+            message,
+            "You need to specify an redirect url. Follow pattern: https://example.com",
+            disable_web_page_preview=True
+        )
         return
 
     if Config.WEBHOOK_HOST in redirect_url:
@@ -98,7 +105,11 @@ def set_redirect(message: types.Message):
     try:
         TgUser(id=user.id, redirect_url=redirect_url)
     except ValidationError:
-        bot.reply_to(message, "Invalid url. Try to follow pattern: https://example.com")
+        bot.reply_to(
+            message,
+            "Invalid url. Try to follow pattern: https://example.com",
+            disable_web_page_preview=True
+        )
         return
 
     user.redirect_url = redirect_url
@@ -112,9 +123,12 @@ def get_info(message):
     if user is None:
         bot.reply_to(message, "You are not registered")
         return
-    bot.reply_to(message,
-                 f"Your address is {user.address}\n"
-                 f"Your redirect url is {user.redirect_url}")
+    bot.reply_to(
+        message,
+        f"Your address is {user.address}\n"
+        f"Your redirect url is {user.redirect_url}",
+        disable_web_page_preview=True
+    )
 
 
 # Remove webhook, it fails sometimes the set if there is a previous webhook
