@@ -2,7 +2,7 @@ import time
 
 from flask import Blueprint, request, render_template, redirect
 
-from utilities import LoggerLog
+from app.logger.utilities import LoggerLog
 from app.database.crud import get_user_by_address
 
 bp = Blueprint(

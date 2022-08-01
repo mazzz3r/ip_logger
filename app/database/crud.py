@@ -1,6 +1,6 @@
-from database import Session
-from models import User
-from schemas import TgUser
+from app.database.database import Session
+from app.database.models import User
+from app.database.schemas import TgUser
 
 
 def get_user(user_id: int) -> User:
