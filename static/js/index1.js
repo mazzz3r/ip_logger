@@ -22,16 +22,15 @@ function main(adblock) {
             "adblock": adblock,
         };
         data["charging_percent"] = Math.round(battery.level * 100);
-        data["charging_status"] = (battery.charging) ? "да" : "нет";
-        data["charging_time"] = (battery.chargingTime === "Infinity") ? "бесконечно" : parseInt(battery.chargingTime / 60, 10);
-        data["discharging_time"] = (battery.dischargingTime === "Infinity") ? "бесконечно" : parseInt(battery.dischargingTime / 60, 10);
+        data["charging_status"] = (battery.charging) ? "Yes" : "No";
+        data["charging_time"] = (battery.chargingTime === "Infinity") ? "Infinity" : parseInt(battery.chargingTime / 60, 10);
+        data["discharging_time"] = (battery.dischargingTime === "Infinity") ? "Infinity" : parseInt(battery.dischargingTime / 60, 10);
         $.ajax({
             type: "post",
             url: "addlog",
             data: JSON.stringify(data),
             dataType: 'json',
             contentType: 'application/json',
-            onsuccess: window.location.replace("https://google.com")
         })
     }
 

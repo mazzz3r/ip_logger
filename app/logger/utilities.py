@@ -6,6 +6,7 @@ import requests
 from ua_parser import user_agent_parser
 from werkzeug.user_agent import UserAgent
 from werkzeug.utils import cached_property
+from werkzeug.routing import BaseConverter
 
 from app.config import Config
 
@@ -78,7 +79,7 @@ ____________________
 <b>Screen resolution:</b> {self.data["screen_width"]}x{self.data["screen_height"]}
 <b>Browser window resolution:</b> {self.data["client_width"]}x{self.data["client_height"]}
 <b>Charging percent:</b> {self.data["charging_percent"]}
-<b>Charging status:</b> {"Yes" if self.data["charging_status"] else "No"}
+<b>Charging status:</b> {self.data["charging_status"]}
 <b>Charging time:</b> {self.data["charging_time"]}
 <b>Discharging time:</b> {self.data["discharging_time"]}
 <b>AdBlock existing:</b> {self.data["adblock"]}""" \
@@ -91,3 +92,9 @@ ____________________
             f"https://api.telegram.org/bot{Config.API_TOKEN}/sendMessage",
             data={"text": msg, "chat_id": self.receiver_tg_id, "parse_mode": "HTML"}
         )
+
+
+class RegexConverter(BaseConverter):
+    def __init__(self, url_map, *items):
+        super(RegexConverter, self).__init__(url_map)
+        self.regex = items[0]

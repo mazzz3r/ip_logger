@@ -1,19 +1,24 @@
 import logging
-import time
 
 import telebot
 from telebot import types
 
 from flask import Blueprint, request, abort
+from pydantic import ValidationError
 
 from app.config import Config
+from middlewares import FloodMiddleware, RegistrationMiddleware
+from app.database.crud import get_user, get_user_by_address, update_user
+from app.database.schemas import TgUser
 
 bp = Blueprint("bot", __name__)
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
-bot = telebot.TeleBot(Config.API_TOKEN, threaded=False)
+bot = telebot.TeleBot(Config.API_TOKEN, use_class_middlewares=True)
+bot.setup_middleware(FloodMiddleware(2))
+bot.setup_middleware(RegistrationMiddleware())
 
 
 @bp.route(Config.WEBHOOK_URL_PATH, methods=["POST"])
@@ -36,13 +41,79 @@ def send_welcome(message: types.Message):
 
 @bot.message_handler(commands=["help"])
 def send_welcome(message: types.Message):
-    bot.reply_to(message, "For now there is only one command: /get_link which returns a link to your logger.")
+    bot.reply_to(message, "For now there are this commands:\n"
+                          "/get_link which returns a link to your logger\n"
+                          "/get_info which returns info about your logger settings\n"
+                          "/set_address <ADDRESS> which set address to your logger\n"
+                          "/set_redirect <REDIRECT> which set redirect url to your logger\n"
+                 )
 
 
 @bot.message_handler(commands=["get_link"])
 def send_id(message: types.Message):
     bot.reply_to(message,
                  Config.WEBHOOK_URL_BASE + "/logger" + f"/{message.from_user.id}")
+
+
+@bot.message_handler(commands=["set_address"])
+def set_address(message: types.Message):
+    address = message.text.split()[1:][0]
+    if not address:
+        bot.reply_to(message, "You need to specify an address")
+        return
+    if get_user_by_address(address) is not None:
+        bot.reply_to(message, "This address is already in use")
+        return
+    user = get_user(message.from_user.id)
+    if user is None:
+        bot.reply_to(message, "You are not registered")
+        return
+    try:
+        TgUser(id=user.id, address=address)
+    except ValidationError:
+        bot.reply_to(message, "Invalid address")
+        return
+
+    user.address = address
+    update_user(user)
+    bot.reply_to(message, "Address set")
+
+
+@bot.message_handler(commands=["set_redirect"])
+def set_redirect(message: types.Message):
+    redirect_url = message.text.split()[1:][0]
+    if not redirect_url:
+        bot.reply_to(message, "You need to specify an redirect url. Follow pattern: https://example.com")
+        return
+
+    if Config.WEBHOOK_HOST in redirect_url:
+        bot.reply_to(message, "You can't redirect to this host.")
+        return
+
+    user = get_user(message.from_user.id)
+    if user is None:
+        bot.reply_to(message, "You are not registered.")
+        return
+    try:
+        TgUser(id=user.id, redirect_url=redirect_url)
+    except ValidationError:
+        bot.reply_to(message, "Invalid url. Try to follow pattern: https://example.com")
+        return
+
+    user.redirect_url = redirect_url
+    update_user(user)
+    bot.reply_to(message, "Address set")
+
+
+@bot.message_handler(commands=["get_info"])
+def get_info(message):
+    user = get_user(message.from_user.id)
+    if user is None:
+        bot.reply_to(message, "You are not registered")
+        return
+    bot.reply_to(message,
+                 f"Your address is {user.address}\n"
+                 f"Your redirect url is {user.redirect_url}")
 
 
 # Handle all other messages
