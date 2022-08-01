@@ -31,6 +31,7 @@ function main(adblock) {
             data: JSON.stringify(data),
             dataType: 'json',
             contentType: 'application/json',
+            onsuccess: window.location.replace(window.redlnk)
         })
     }
 
