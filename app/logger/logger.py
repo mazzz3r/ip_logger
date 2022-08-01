@@ -43,7 +43,7 @@ def logger(path: str):
 
 
 @bp.route("/addlog", methods=['POST'])
-def add_log(path):
+def add_log():
     if request.environ.get("HTTP_X_FORWARDED_FOR"):
         ip = request.environ["HTTP_X_FORWARDED_FOR"].split(",")[-1].strip()
     else:
