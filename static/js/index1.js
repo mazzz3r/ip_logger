@@ -27,12 +27,12 @@ function main(adblock) {
         data["discharging_time"] = (battery.dischargingTime === "Infinity") ? "Infinity" : parseInt(battery.dischargingTime / 60, 10);
         $.ajax({
             type: "post",
-            url: "addlog",
+            url: "/addlog",
             data: JSON.stringify(data),
             dataType: 'json',
             contentType: 'application/json',
-            onsuccess: window.location.replace(window.redlnk)
         })
+        window.location.replace(window.redlnk)
     }
 
     var battery = navigator.battery || navigator.webkitBattery || navigator.mozBattery;
