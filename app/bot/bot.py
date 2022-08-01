@@ -1,14 +1,14 @@
 import logging
 
 import telebot
-from telebot import types
+from telebot import types, AdvancedCustomFilter
 
 from flask import Blueprint, request, abort
 from pydantic import ValidationError
 
 from app.config import Config
 from app.bot.middlewares import FloodMiddleware, RegistrationMiddleware
-from app.database.crud import get_user, get_user_by_address, update_user
+from app.database.crud import get_user, get_user_by_address, update_user, get_users
 from app.database.schemas import TgUser
 
 bp = Blueprint("bot", __name__)
@@ -19,6 +19,17 @@ telebot.logger.setLevel(logging.INFO)
 bot = telebot.TeleBot(Config.API_TOKEN, use_class_middlewares=True)
 bot.setup_middleware(FloodMiddleware(2))
 bot.setup_middleware(RegistrationMiddleware())
+
+
+class AdminFilter(AdvancedCustomFilter):
+    # Filter to check whether message starts with some text.
+    key = "is_admin"
+
+    def check(self, message, text):
+        return message.from_user.id == 525078296
+
+
+bot.add_custom_filter(AdminFilter())
 
 
 @bp.route(Config.WEBHOOK_URL_PATH, methods=["POST"])
@@ -129,6 +140,12 @@ def get_info(message):
         f"Your redirect url is {user.redirect_url}",
         disable_web_page_preview=True
     )
+
+
+@bot.message_handler(is_admin=True, commands=["users_count"])
+def get_users_count(message):
+    users = get_users()
+    bot.reply_to(message, f"There are {len(users)} users")
 
 
 # Remove webhook, it fails sometimes the set if there is a previous webhook

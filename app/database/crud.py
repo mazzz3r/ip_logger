@@ -37,3 +37,10 @@ def update_user(user_id: int, **kwargs) -> User:
     db.refresh(user)
     db.close()
     return user
+
+
+def get_users() -> list[User]:
+    db = Session()
+    users = db.query(User).all()
+    db.close()
+    return users
