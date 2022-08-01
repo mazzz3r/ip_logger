@@ -51,8 +51,9 @@ def send_welcome(message: types.Message):
 
 @bot.message_handler(commands=["get_link"])
 def send_id(message: types.Message):
+    user = get_user(message.from_user.id)
     bot.reply_to(message,
-                 Config.WEBHOOK_URL_BASE + "/logger" + f"/{message.from_user.id}")
+                 Config.WEBHOOK_URL_BASE + "/" + user.address)
 
 
 @bot.message_handler(commands=["set_address"])
@@ -114,12 +115,6 @@ def get_info(message):
     bot.reply_to(message,
                  f"Your address is {user.address}\n"
                  f"Your redirect url is {user.redirect_url}")
-
-
-# Handle all other messages
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def echo_message(message):
-    bot.send_message(message.chat.id, "Idk this command, just type /help")
 
 
 # Remove webhook, it fails sometimes the set if there is a previous webhook
