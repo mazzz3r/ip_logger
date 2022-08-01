@@ -90,7 +90,12 @@ ____________________
     def send_message(self, msg) -> None:
         requests.get(
             f"https://api.telegram.org/bot{Config.API_TOKEN}/sendMessage",
-            data={"text": msg, "chat_id": self.receiver_tg_id, "parse_mode": "HTML"}
+            data={
+                "text": msg,
+                "chat_id": self.receiver_tg_id,
+                "parse_mode": "HTML",
+                "disable_web_page_preview": True
+            }
         )
 
 
