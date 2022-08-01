@@ -4,3 +4,5 @@ Werkzeug~=2.2.1
 pydantic~=1.9.1
 SQLAlchemy~=1.4.39
 pytelegrambotapi
+gunicorn
+psycopg2
