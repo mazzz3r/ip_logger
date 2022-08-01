@@ -7,7 +7,7 @@ from flask import Blueprint, request, abort
 from pydantic import ValidationError
 
 from app.config import Config
-from middlewares import FloodMiddleware, RegistrationMiddleware
+from app.bot.middlewares import FloodMiddleware, RegistrationMiddleware
 from app.database.crud import get_user, get_user_by_address, update_user
 from app.database.schemas import TgUser
 
