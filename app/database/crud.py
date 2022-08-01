@@ -22,13 +22,14 @@ def create_user(user: TgUser) -> User:
     user = User(id=user.id, address=user.address, redirect_url=user.redirect_url)
     db.add(user)
     db.commit()
+    db.refresh(user)
     db.close()
     return user
 
 
 def update_user(user: User) -> User:
     db = Session()
-    db.update(user)
     db.commit()
+    db.refresh(user)
     db.close()
     return user
