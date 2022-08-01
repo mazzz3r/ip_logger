@@ -79,8 +79,7 @@ def set_address(message: types.Message):
         bot.reply_to(message, "Invalid address")
         return
 
-    user.address = address
-    update_user(user)
+    update_user(user.id, address=address)
     bot.reply_to(message, "Address set")
 
 
@@ -114,9 +113,8 @@ def set_redirect(message: types.Message):
         )
         return
 
-    user.redirect_url = redirect_url
-    update_user(user)
-    bot.reply_to(message, "Address set")
+    update_user(user.id, redirect_url=redirect_url)
+    bot.reply_to(message, "Redirect url set")
 
 
 @bot.message_handler(commands=["get_info"])

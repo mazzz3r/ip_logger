@@ -27,9 +27,13 @@ def create_user(user: TgUser) -> User:
     return user
 
 
-def update_user(user: User) -> User:
+def update_user(user_id: int, **kwargs) -> User:
     db = Session()
+    user = get_user(user_id)
+    for k, v in kwargs.items():
+        setattr(user, k, v)
     db.commit()
+
     db.refresh(user)
     db.close()
     return user
