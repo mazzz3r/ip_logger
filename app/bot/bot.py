@@ -61,10 +61,11 @@ def send_id(message: types.Message):
 
 @bot.message_handler(commands=["set_address"])
 def set_address(message: types.Message):
-    address = message.text.split()[1:][0]
-    if not address:
+    argument = message.text.split()[1:]
+    if not argument:
         bot.reply_to(message, "You need to specify an address")
         return
+    address = argument[0]
     if get_user_by_address(address) is not None:
         bot.reply_to(message, "This address is already in use")
         return
@@ -85,8 +86,8 @@ def set_address(message: types.Message):
 
 @bot.message_handler(commands=["set_redirect"])
 def set_redirect(message: types.Message):
-    redirect_url = message.text.split()[1:][0]
-    if not redirect_url:
+    argument = message.text.split()[1:]
+    if not argument:
         bot.reply_to(
             message,
             "You need to specify an redirect url. Follow pattern: https://example.com",
@@ -94,6 +95,7 @@ def set_redirect(message: types.Message):
         )
         return
 
+    redirect_url = argument[0]
     if Config.WEBHOOK_HOST in redirect_url:
         bot.reply_to(message, "You can't redirect to this host.")
         return
