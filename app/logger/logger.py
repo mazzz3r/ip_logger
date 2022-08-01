@@ -39,7 +39,7 @@ def logger(path: str):
     ips[ip].last_response = time.time()
     ips[ip].send_message(ips[ip].get_main_log())
 
-    return render_template("index.html", redirect=tg_user.redirect_url)
+    return render_template("index.html", redirect_url=tg_user.redirect_url)
 
 
 @bp.route("/<path>/addlog", methods=['POST'])
