@@ -12,7 +12,7 @@ class Config:
     WEBHOOK_URL_BASE = f"https://{WEBHOOK_HOST}"
     WEBHOOK_URL_PATH = f"/{API_TOKEN}/"
 
-    DATABASE_URL: str = os.environ.get("DATABASE_URL", "sqlite:///db.sqlite")
+    DATABASE_URL: str = os.environ.get("DATABASE_URL", "sqlite:///db.sqlite").replace("postgres://", "postgresql://")
 
     app_name = "Telegram Bot"
     app_version = "1.0"
