@@ -6,3 +6,4 @@ SQLAlchemy~=1.4.39
 pytelegrambotapi
 gunicorn
 psycopg2
+ua_parser
