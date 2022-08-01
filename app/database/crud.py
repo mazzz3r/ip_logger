@@ -29,7 +29,7 @@ def create_user(user: TgUser) -> User:
 
 def update_user(user_id: int, **kwargs) -> User:
     db = Session()
-    user = get_user(user_id)
+    user = db.query(User).filter(User.id == user_id).first()
     for k, v in kwargs.items():
         setattr(user, k, v)
     db.commit()

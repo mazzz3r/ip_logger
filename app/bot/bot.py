@@ -74,12 +74,12 @@ def set_address(message: types.Message):
         bot.reply_to(message, "You are not registered")
         return
     try:
-        TgUser(id=user.id, address=address)
+        user = TgUser(id=user.id, address=address)
     except ValidationError:
         bot.reply_to(message, "Invalid address")
         return
 
-    update_user(user.id, address=address)
+    update_user(user.id, address=user.address)
     bot.reply_to(message, "Address set")
 
 
@@ -104,7 +104,7 @@ def set_redirect(message: types.Message):
         bot.reply_to(message, "You are not registered.")
         return
     try:
-        TgUser(id=user.id, redirect_url=redirect_url)
+        user = TgUser(id=user.id, redirect_url=redirect_url)
     except ValidationError:
         bot.reply_to(
             message,
@@ -113,7 +113,7 @@ def set_redirect(message: types.Message):
         )
         return
 
-    update_user(user.id, redirect_url=redirect_url)
+    update_user(user.id, redirect_url=user.redirect_url)
     bot.reply_to(message, "Redirect url set")
 
 
