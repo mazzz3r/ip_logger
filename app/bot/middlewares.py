@@ -1,8 +1,8 @@
 from telebot.handler_backends import BaseMiddleware
 from telebot.handler_backends import CancelUpdate
 
-from app.database.crud import get_user, create_user
-from app.database.schemas import TgUser
+from app.database.users.crud import get_user, create_user
+from app.database.users.schemas import User
 
 
 class FloodMiddleware(BaseMiddleware):
@@ -34,7 +34,7 @@ class RegistrationMiddleware(BaseMiddleware):
 
     def pre_process(self, message, data):
         if get_user(message.from_user.id) is None:
-            create_user(TgUser(id=message.from_user.id))
+            create_user(User(id=message.from_user.id))
         return
 
     def post_process(self, message, data, exception):

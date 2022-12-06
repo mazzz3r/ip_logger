@@ -1,3 +1,5 @@
-from app.database.database import Base, engine
+from deta import Deta, Base
 
-__all__ = ["Base", "engine"]
+from app.config import Config
+
+deta = Deta(Config.PROJECT_KEY)

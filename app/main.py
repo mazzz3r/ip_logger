@@ -2,12 +2,9 @@ from flask import Flask
 
 from app.bot import bp as bot_blueprint
 from app.logger import bp as logger_blueprint
-from app.database import Base, engine
-from app.database import models
 from app.logger.utilities import RegexConverter
+from app.database import deta
 
-
-Base.metadata.create_all(engine)
 
 app = Flask(
     __name__,

@@ -7,12 +7,13 @@ class Config:
     """
     Configuration for the application.
     """
-    API_TOKEN = os.environ.get("API_TOKEN", "YOUR TG API TOKEN HERE")
-    WEBHOOK_HOST = os.environ.get("WEBHOOK_HOST", "YOUR_DOMAIN.COM")
+    API_TOKEN = os.environ["API_TOKEN"]
+    WEBHOOK_HOST = os.environ["WEBHOOK_HOST"]
     WEBHOOK_URL_BASE = f"https://{WEBHOOK_HOST}"
     WEBHOOK_URL_PATH = f"/{API_TOKEN}/"
+    INITIALIZED = os.environ.get("INITIALIZED", False)
 
-    DATABASE_URL: str = os.environ.get("DATABASE_URL", "sqlite:///db.sqlite").replace("postgres://", "postgresql://")
+    PROJECT_KEY: str = os.environ["PROJECT_KEY"]
 
     app_name = "Telegram Bot"
     app_version = "1.0"

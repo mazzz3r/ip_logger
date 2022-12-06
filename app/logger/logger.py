@@ -3,7 +3,7 @@ import time
 from flask import Blueprint, request, render_template, redirect
 
 from app.logger.utilities import LoggerLog
-from app.database.crud import get_user_by_address
+from app.database.users.crud import get_user_by_address
 
 bp = Blueprint(
     "ip_logger",

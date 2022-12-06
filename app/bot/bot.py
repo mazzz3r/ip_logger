@@ -7,9 +7,9 @@ from flask import Blueprint, request, abort
 from pydantic import ValidationError
 
 from app.config import Config
-from app.bot.middlewares import FloodMiddleware, RegistrationMiddleware
-from app.database.crud import get_user, get_user_by_address, update_user, get_users
-from app.database.schemas import TgUser
+from app.bot.middlewares import RegistrationMiddleware, FloodMiddleware
+from app.database.users.crud import get_user, get_user_by_address, update_user, get_users
+from app.database.users.schemas import User
 
 bp = Blueprint("bot", __name__)
 
@@ -32,13 +32,14 @@ class AdminFilter(AdvancedCustomFilter):
 bot.add_custom_filter(AdminFilter())
 
 
-@bp.route(Config.WEBHOOK_URL_PATH, methods=["POST"])
+@bp.route(Config.WEBHOOK_URL_PATH, methods=['POST'])
 def webhook():
-    if request.headers.get("content-type") == "application/json":
-        json_string = request.get_data().decode("utf-8")
+    if request.headers.get('content-type') == 'application/json':
+        json_string = request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
+        logger.debug(f"Update: {update}\n\n")
         bot.process_new_updates([update])
-        return "ok"
+        return ''
     else:
         abort(403)
 
@@ -51,7 +52,7 @@ def send_welcome(message: types.Message):
 
 
 @bot.message_handler(commands=["help"])
-def send_welcome(message: types.Message):
+def send_help(message: types.Message):
     bot.reply_to(message, "For now there are this commands:\n"
                           "/get_link which returns a link to your logger\n"
                           "/get_info which returns info about your logger settings\n"
@@ -85,7 +86,7 @@ def set_address(message: types.Message):
         bot.reply_to(message, "You are not registered")
         return
     try:
-        user = TgUser(id=user.id, address=address)
+        user = User(id=user.id, address=address)
     except ValidationError:
         bot.reply_to(message, "Invalid address")
         return
@@ -115,7 +116,7 @@ def set_redirect(message: types.Message):
         bot.reply_to(message, "You are not registered.")
         return
     try:
-        user = TgUser(id=user.id, redirect_url=redirect_url)
+        user = User(id=user.id, redirect_url=redirect_url)
     except ValidationError:
         bot.reply_to(
             message,
@@ -146,14 +147,3 @@ def get_info(message):
 def get_users_count(message):
     users = get_users()
     bot.reply_to(message, f"There are {len(users)} users")
-
-
-# Remove webhook, it fails sometimes the set if there is a previous webhook
-# Uncomment to create webhook
-"""
-def create_webhook():
-    bot.remove_webhook()
-    time.sleep(0.1)
-    # Set webhook
-    bot.set_webhook(url=Config.WEBHOOK_URL_BASE + "/bot" + Config.WEBHOOK_URL_PATH)
-"""
