@@ -1,6 +1,9 @@
 import os
 from dataclasses import dataclass
+from dotenv import load_dotenv
 
+# Load environment variables from .env file
+load_dotenv()
 
 @dataclass
 class Config:
@@ -11,12 +14,13 @@ class Config:
     WEBHOOK_HOST = os.environ["WEBHOOK_HOST"]
     WEBHOOK_URL_BASE = f"https://{WEBHOOK_HOST}"
     WEBHOOK_URL_PATH = f"/{API_TOKEN}/"
-    INITIALIZED = os.environ.get("INITIALIZED", False)
+    LOG_LEVEL = os.environ["LOG_LEVEL"]
+    ADMIN_ID = os.environ["ADMIN_ID"]
+    # Database configuration
+    DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///app.db")
 
-    PROJECT_KEY: str = os.environ["PROJECT_KEY"]
-
-    app_name = "Telegram Bot"
-    app_version = "1.0"
+    app_name = "IP Logger"
+    app_version = "2.0"
     app_description = "A telegram bot for ip logger and deanonymization"
     app_author: str = "mazzz3r"
     app_author_email = "i@mazzz3r.ru"

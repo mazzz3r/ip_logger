@@ -1,8 +1,10 @@
 from telebot.handler_backends import BaseMiddleware
 from telebot.handler_backends import CancelUpdate
 
+from flask import current_app
 from app.database.users.crud import get_user, create_user
-from app.database.users.schemas import User
+from app.database.users.schemas import TgUser
+from app.utils.logging_config import get_bot_logger
 
 
 class FloodMiddleware(BaseMiddleware):
@@ -33,8 +35,10 @@ class RegistrationMiddleware(BaseMiddleware):
         self.update_types = ['message']
 
     def pre_process(self, message, data):
-        if get_user(message.from_user.id) is None:
-            create_user(User(id=message.from_user.id))
+        # Use Flask application context for database operations
+        with current_app.app_context():
+            if get_user(message.from_user.id) is None:
+                create_user(TgUser(id=message.from_user.id))
         return
 
     def post_process(self, message, data, exception):

