@@ -123,43 +123,45 @@ You can configure the log level using the `LOG_LEVEL` environment variable:
 ```
 logger/
 ├── app/
-│   ├── bot/
-│   │   ├── bot.py           # Telegram bot implementation
-│   │   ├── middlewares.py   # Bot middlewares
+│   ├── bot/                # Telegram bot functionality
+│   │   ├── bot.py          # Telegram bot implementation
+│   │   ├── middlewares.py  # Bot middlewares
 │   │   └── __init__.py
-│   ├── database/
-│   │   ├── logs/            # Log management
-│   │   │   ├── crud.py      # Log database operations
-│   │   ├── users/           # User management
-│   │   │   ├── crud.py      # User database operations
-│   │   │   └── schemas.py   # User data models
-│   │   ├── models.py        # SQLAlchemy models
+│   ├── database/           # Database operations
+│   │   ├── logs/           # Log management
+│   │   │   ├── crud.py     # Log database operations
+│   │   ├── users/          # User management
+│   │   │   ├── crud.py     # User database operations
+│   │   │   └── schemas.py  # User data models
+│   │   ├── models.py       # SQLAlchemy models
 │   │   └── __init__.py
-│   ├── logger/
-│   │   ├── logger.py        # Logger implementation
-│   │   ├── utilities.py     # Helper functions
+│   ├── logger/             # Logger functionality
+│   │   ├── logger.py       # Logger implementation
+│   │   ├── utilities.py    # Helper functions
 │   │   └── __init__.py
-│   ├── utils/
+│   ├── utils/              # Utility functions
 │   │   ├── logging_config.py # Logging configuration
 │   │   └── __init__.py
-│   ├── config.py            # Application configuration
-│   ├── main.py              # Flask application setup
+│   ├── config.py           # Application configuration
+│   ├── main.py             # Flask application setup
 │   └── __init__.py
-├── logs/                    # Application logs
-├── static/
-│   └── js/                  # Client-side JavaScript
-│       ├── index.js
-│       ├── index1.js
-│       └── index2.js
-├── templates/
-│   └── index.html           # HTML template
-├── Dockerfile               # Docker configuration
-├── docker-compose.yml       # Docker Compose configuration
-├── .env.example             # Example environment variables
-├── .dockerignore            # Docker ignore file
-├── .gitignore               # Git ignore file
-├── requirements.txt         # Project dependencies
-└── README.md                # Project documentation
+├── instance/               # Instance-specific data
+├── logs/                   # Application logs
+├── static/                 # Static files
+│   └── js/                 # JavaScript files
+│       ├── index.js        # Main JavaScript
+│       ├── index1.js       # Client data collection
+│       └── index2.js       # Additional functionality
+├── templates/              # HTML templates
+│   └── index.html          # Main HTML template
+├── venv/                   # Virtual environment
+├── .env                    # Environment variables
+├── .env.example            # Example environment variables
+├── .gitignore              # Git ignore file
+├── LICENSE                 # MIT License
+├── main.py                 # Entry point
+├── README.md               # Project documentation
+└── requirements.txt        # Project dependencies
 ```
 
 
@@ -170,4 +172,4 @@ logger/
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
